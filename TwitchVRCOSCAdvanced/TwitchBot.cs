@@ -12,12 +12,20 @@ namespace TwitchVRCOSCAdvanced
         const string ip = "irc.chat.twitch.tv";
         const int port = 6667;
         private TaskCompletionSource<int> connect = new TaskCompletionSource<int>();
+        public event TwitchChatEvent OnMessage = delegate { };
+        public delegate void TwitchChatEvent(object sender, TwitchChatMessage e);
 
         private string uname;
         private string oauth;
         private string streamer;
         private StreamReader streamReader;
         private StreamWriter streamWriter;
+
+        public class TwitchChatMessage : EventArgs
+        {
+            public string Sender { get; set; }
+            public string Message { get; set; }
+        }
 
         public TwitchBot(string uname, string oauth, string streamer)
         {
@@ -57,12 +65,19 @@ namespace TwitchVRCOSCAdvanced
                     string user = split[0].Substring(1, exclamationPointPosition - 1);
                     int secondcolon = line.IndexOf(':', 1);
                     string message = line.Substring(secondcolon + 1);
-                    Console.WriteLine($"{user}: {message}");
+                    //Console.WriteLine($"{user}: {message}");
+
+                    OnMessage(this, new TwitchChatMessage
+                    {
+                        Message = message,
+                        Sender = user,
+                    });
                 }
+               }
 
             }
 
-        }
+        
 
         public async Task SendMessage(String streamer, String message)
         {

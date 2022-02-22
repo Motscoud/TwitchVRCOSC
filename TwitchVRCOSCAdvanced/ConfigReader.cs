@@ -12,6 +12,7 @@ namespace TwitchVRCOSCAdvanced
         private String uname;
         private String oauth;
         private String streamer;
+        private String[] commands;
         private String CurrentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         public (String, String, String) GetConfig()
         {
@@ -21,6 +22,12 @@ namespace TwitchVRCOSCAdvanced
             streamer = GetLine((CurrentDir + "\\config.conf"), 6);
 
             return (uname, oauth, streamer);
+        }
+
+        public String[] getCommands()
+        {
+            commands = File.ReadAllLines(CurrentDir + "\\commands.conf");
+            return commands;
         }
 
         private string GetLine(string fileName, int line)
