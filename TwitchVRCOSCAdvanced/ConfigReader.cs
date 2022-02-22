@@ -8,6 +8,7 @@ namespace TwitchVRCOSCAdvanced
 {
     public class ConfigReader
     {
+        //Test
         private String uname;
         private String oauth;
         private String streamer;
