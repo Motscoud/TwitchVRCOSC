@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AsyncAwaitBestPractices;
+using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -16,7 +17,10 @@ namespace TwitchVRCOSCAdvanced
             string streamer = confResult.Item3;
 
             var bot = new TwitchBot(uname, oauth, streamer);
-            await bot.Start();
+            bot.Start().SafeFireAndForget();
+            await bot.JoinStreamer(streamer);
+            await bot.SendMessage(streamer, "Beep boop! Hello I am TwitchVRCOSC, I'll be able to send commands to avatars in VRChat!");
+            await Task.Delay(-1);
             //Console.WriteLine($"{uname}+{oauth}+{streamer}");
         }
     }

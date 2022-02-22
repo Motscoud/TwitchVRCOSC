@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AsyncAwaitBestPractices" Version="6.0.4" />
     <PackageReference Include="TwitchLib" Version="3.3.0" />
   </ItemGroup>
 

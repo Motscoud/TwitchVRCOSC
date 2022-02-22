@@ -11,6 +11,7 @@ namespace TwitchVRCOSCAdvanced
     {
         const string ip = "irc.chat.twitch.tv";
         const int port = 6667;
+        private TaskCompletionSource<int> connect = new TaskCompletionSource<int>();
 
         private string uname;
         private string oauth;
@@ -36,8 +37,7 @@ namespace TwitchVRCOSCAdvanced
             streamWriter = new StreamWriter(tcpClient.GetStream()) { NewLine = "\r\n", AutoFlush = true };
             await streamWriter.WriteLineAsync($"PASS {oauth}");
             await streamWriter.WriteLineAsync($"NICK {uname}");
-            await streamWriter.WriteLineAsync($"JOIN #{streamer}");
-            await streamWriter.WriteLineAsync($"PRIVMSG #{streamer} :Beep boop! Hello I am TwitchVRCOSC, I'll be able to send commands to avatars in VRChat!");
+            connect.SetResult(0);
 
             while (true)
             {
@@ -61,6 +61,19 @@ namespace TwitchVRCOSCAdvanced
                 }
 
             }
+
+        }
+
+        public async Task SendMessage(String streamer, String message)
+        {
+            await connect.Task;
+            await streamWriter.WriteLineAsync($"PRIVMSG #{streamer} :{message}");
+        }
+
+        public async Task JoinStreamer(String streamer)
+        {
+            await connect.Task;
+            await streamWriter.WriteLineAsync($"JOIN #{streamer}");
         }
     }
 }
