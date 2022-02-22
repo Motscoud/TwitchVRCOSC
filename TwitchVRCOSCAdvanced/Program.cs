@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Threading;
+using SharpOSC;
 
 namespace TwitchVRCOSCAdvanced
 {
@@ -24,6 +26,9 @@ namespace TwitchVRCOSCAdvanced
                 commlist = commlist + $" {item},";
             }
 
+            var oscsender = new SharpOSC.UDPSender("127.0.0.1",9000);
+            var oscsleep = new SharpOSC.OscMessage("/avatar/parameters/twitchindex", 0);
+
             var bot = new TwitchBot(uname, oauth, streamer);
             bot.Start().SafeFireAndForget();
             await bot.JoinStreamer(streamer);
@@ -35,6 +40,12 @@ namespace TwitchVRCOSCAdvanced
                 if (commands.Any(TwitchChatMessage.Message.Contains))
                 {
                     Console.WriteLine("Valid command recieved");
+                    int commandposition = Array.IndexOf(commands,TwitchChatMessage.Message);
+                    var oscmessage = new SharpOSC.OscMessage("/avatar/parameters/twitchindex", commandposition);
+                    oscsender.Send(oscmessage);
+                    Thread.Sleep(100);
+                    oscsender.Send(oscsleep);
+
                 }
                 else if (TwitchChatMessage.Message == "!help")
                 {
